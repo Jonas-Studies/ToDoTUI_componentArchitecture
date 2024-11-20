@@ -33,11 +33,23 @@ impl TextField <'_> {
 
         Self { text, borders, cursor_offset: 0 }
     }
+    fn get_index_of_last_character(& self) -> usize {
+        self.text.len() - 1
+    }
+    fn get_index_of_first_character(& self) -> usize {
+        0
+    }
     fn can_cursor_move_right(& self) -> bool {
-        self.cursor_offset < self.text.len()
+        self.cursor_offset <= self.get_index_of_last_character()
     }
     fn can_cursor_move_left(& self) -> bool {
-        self.cursor_offset > 0
+        self.cursor_offset > self.get_index_of_first_character()
+    }
+    fn can_delete_current_character(& self) -> bool {
+        self.cursor_offset <= self.get_index_of_last_character()
+    }
+    fn can_delete_previous_character(& self) -> bool {
+        self.cursor_offset > self.get_index_of_first_character()
     }
     fn move_cursor_right(& mut self) {
         self.cursor_offset += 1;
@@ -46,10 +58,17 @@ impl TextField <'_> {
         self.cursor_offset -= 1;
     }
     fn move_cursor_end(& mut self) {
-        self.cursor_offset = self.text.len();
+        self.cursor_offset = self.get_index_of_last_character() + 1;
     }
     fn move_cursor_start(& mut self) {
-        self.cursor_offset = 0;
+        self.cursor_offset = self.get_index_of_first_character();
+    }
+    fn delete_current_character(& mut self) {
+        self.text.remove(self.cursor_offset);
+    }
+    fn delete_previous_character(& mut self) {
+        self.text.remove(self.cursor_offset - 1);
+        self.move_cursor_left();
     }
 }
 
@@ -95,6 +114,20 @@ impl CanHandleUserinput for TextField <'_> {
             }
             KeyCode::Home => {
                 self.move_cursor_start();
+            }
+            KeyCode::Char(character) => {
+                self.text.insert(self.cursor_offset, *character);
+                self.move_cursor_right();
+            }
+            KeyCode::Delete => {
+                if self.can_delete_current_character() {
+                    self.delete_current_character();
+                }
+            }
+            KeyCode::Backspace => {
+                if self.can_delete_previous_character() {
+                    self.delete_previous_character();
+                }
             }
             _ => {}
         }
