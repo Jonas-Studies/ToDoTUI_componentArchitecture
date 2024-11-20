@@ -3,14 +3,11 @@ use crate::Task;
 use super::{
     content::TextField,
     field::Field,
-    traits::{CanBeFocused, MayDisplayCursor}
+    traits::{CanBeFocused, CanHandleUserinput, MayDisplayCursor}
 };
 
 use ratatui::{
-    prelude::{Buffer, Position},
-    widgets::Paragraph,
-    layout::{Rect, Layout, Constraint},
-    style::{Stylize, Modifier}
+    crossterm::event::KeyCode, layout::{Constraint, Layout, Rect}, prelude::{Buffer, Position}, style::{Modifier, Stylize}, widgets::Paragraph
 };
 
 pub struct Application <'applications_lifetime> {
@@ -54,5 +51,11 @@ impl Application <'_> {
 impl MayDisplayCursor for Application <'_> {
     fn get_cursor_position(& self) -> Option<Position> {
         self.name.get_cursor_position()
+    }
+}
+
+impl CanHandleUserinput for Application <'_> {
+    fn handle_userinput(& mut self, userinput: & KeyCode) {
+        self.name.handle_userinput(userinput);
     }
 }

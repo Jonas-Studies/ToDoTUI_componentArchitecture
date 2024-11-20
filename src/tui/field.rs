@@ -1,6 +1,6 @@
-use super::traits::{CanBeFocused, IsContent, MayDisplayCursor};
+use super::traits::{CanBeFocused, CanHandleUserinput, IsContent, MayDisplayCursor};
 
-use ratatui::prelude::{Rect, Buffer, Position};
+use ratatui::{crossterm::event::KeyCode, prelude::{Buffer, Position, Rect}};
 
 pub struct Field <Content> where Content: IsContent {
     area: Rect,
@@ -37,5 +37,11 @@ impl <Content> MayDisplayCursor for Field <Content> where Content: IsContent {
         else {
             None
         }
+    }
+}
+
+impl <Content> CanHandleUserinput for Field <Content> where Content: IsContent {
+    fn handle_userinput(& mut self, userinput: & KeyCode) {
+        self.content.handle_userinput(userinput);
     }
 }
