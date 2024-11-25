@@ -46,6 +46,10 @@ impl Application <'_> {
         self.status.render(buffer);
         self.name.render(buffer);
     }
+
+    pub fn save_task(& self, task: & mut Task) {
+        task.set_name(self.name.reference_content().get_text());
+    }
 }
 
 impl MayDisplayCursor for Application <'_> {

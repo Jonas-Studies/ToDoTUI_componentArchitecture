@@ -12,6 +12,10 @@ impl <Content> Field <Content> where Content: IsContent {
         Self { area, content }
     }
 
+    pub fn reference_content(& self) -> & Content {
+        & self.content
+    }
+
     pub fn render (& self, buffer: & mut Buffer) {
         self.content.render_ref(self.area, buffer);
     }

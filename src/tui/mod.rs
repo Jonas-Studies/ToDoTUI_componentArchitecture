@@ -30,6 +30,10 @@ pub fn edit_one_task (task_to_edit: & mut Task) {
                     KeyCode::Esc => {
                         break;
                     }
+                    KeyCode::Enter => {
+                        app.save_task(task_to_edit);
+                        break;
+                    }
                     _ => { app.handle_userinput(& key.code) }
                 }
             }
