@@ -16,7 +16,12 @@ pub struct Application <'applications_lifetime> {
 }
 
 impl Application <'_> {
-    pub fn new (task_to_edit: & Task, area: Rect) -> Self {
+    pub fn new (task_to_edit: & Task, mut area: Rect) -> Self {
+        area.x += 2;
+        area.width -= 4;
+        area.y += 1;
+        area.height -= 2;
+
         let [ status_area, name_area ] = Layout::vertical(
             [ Constraint::Length(1), Constraint::Length(3) ]
         ).spacing(1).areas(area);
