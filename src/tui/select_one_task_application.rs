@@ -31,13 +31,16 @@ impl TaskList <'_> {
             vec![ Constraint::Length(2); tasks.len() ]
         ).split(area);
 
-        let items: Vec<TaskListItem> = areas.iter().enumerate().map(
+        let mut items: Vec<TaskListItem> = areas.iter().enumerate().map(
             |(index_of_area, area)| {
                 TaskListItem::new(& tasks[index_of_area], * area)
             }
         ).collect();
 
-        Self { items, index_of_selected_item: 0 }
+        let index_of_selected_item = 0;
+        items[index_of_selected_item].focus();
+
+        Self { items, index_of_selected_item }
     }
 
     fn render (& self, frame: & mut Frame) {
@@ -63,6 +66,12 @@ impl TaskListItem <'_> {
         let task = Field::new(area, Paragraph::new(text));
 
         Self { task }
+    }
+    fn focus(& mut self) {
+        self.task.focus();
+    }
+    fn unfocus(& mut self) {
+        self.task.unfocus();
     }
     fn render(& self, frame: & mut Frame) {
         self.task.render(frame.buffer_mut());
