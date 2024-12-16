@@ -31,6 +31,9 @@ impl Application <'_> {
             item.render(frame);
         }
     }
+    pub fn get_index_of_selected_item(& self) -> usize {
+        self.index_of_selected_item
+    }
     fn select_next_item(& mut self) {
         self.items[self.index_of_selected_item].unfocus();
         self.index_of_selected_item += 1;
