@@ -21,7 +21,7 @@ impl <Content> Field <Content> where Content: IsContent + Clone {
     }
 
     pub fn unfocus(& mut self) {
-        self.content = self.content.clone().focused();
+        self.content = self.content.clone().unfocused();
     }
 
     pub fn render (& self, buffer: & mut Buffer) {
