@@ -21,7 +21,8 @@ impl Application <'_> {
 }
 
 struct TaskList <'lists_lifetime> {
-    items: Vec<TaskListItem <'lists_lifetime>>
+    items: Vec<TaskListItem <'lists_lifetime>>,
+    index_of_selected_item: usize
 }
 
 impl TaskList <'_> {
@@ -36,7 +37,7 @@ impl TaskList <'_> {
             }
         ).collect();
 
-        Self { items }
+        Self { items, index_of_selected_item: 0 }
     }
 
     fn render (& self, frame: & mut Frame) {
@@ -47,27 +48,23 @@ impl TaskList <'_> {
 }
 
 struct TaskListItem <'items_lifetime> {
-    status: Field<Paragraph <'items_lifetime>>,
+    task: Field<Paragraph <'items_lifetime>>,
 }
 
 impl TaskListItem <'_> {
-    fn new (task: & Task, area: Rect) -> Self {
-        let status_text = if task.is_finished() {
+    fn new(task: & Task, area: Rect) -> Self {
+        let text = if task.is_finished() {
             String::from("Done: ")
         }
         else {
             String::from("Todo: ")
         } + & task.get_name();
 
-        let status = Field::new(area, Paragraph::new(status_text));
+        let task = Field::new(area, Paragraph::new(text));
 
-        Self { status }
+        Self { task }
     }
-
-    fn render_focused(& self, frame: & mut Frame) {
-    }
-
-    fn render (& self, frame: & mut Frame) {
-        self.status.render(frame.buffer_mut());
+    fn render(& self, frame: & mut Frame) {
+        self.task.render(frame.buffer_mut());
     }
 }
