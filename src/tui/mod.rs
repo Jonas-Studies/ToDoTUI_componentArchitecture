@@ -46,7 +46,7 @@ pub fn edit_one_task (task_to_edit: & mut Task) {
 
 pub fn select_one_task (tasks_to_select_from:& Vec<Task>) -> usize {
     let mut terminal = ratatui::init();
-    let app = select_one_task_application::Application::new(tasks_to_select_from, terminal.get_frame().area());
+    let mut app = select_one_task_application::Application::new(tasks_to_select_from, terminal.get_frame().area());
 
     loop {
         terminal.draw(
@@ -64,7 +64,7 @@ pub fn select_one_task (tasks_to_select_from:& Vec<Task>) -> usize {
                     KeyCode::Enter => {
                         break;
                     }
-                    _ => {  }
+                    _ => { app.handle_userinput(& key.code) }
                 }
             }
         }
