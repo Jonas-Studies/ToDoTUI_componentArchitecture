@@ -158,3 +158,47 @@ impl CanHandleUserinput for TextField <'_> {
         }
     }
 }
+
+#[derive(Clone)]
+pub struct Button <'buttons_lifetime> {
+    text: Paragraph <'buttons_lifetime>,
+    borders: Block <'buttons_lifetime>
+}
+
+impl Button <'_> {
+    pub fn new (text: String) -> Self {
+        let text = Paragraph::new(text).centered();
+        let borders = Block::bordered();
+
+        Self { text, borders }
+    }
+}
+
+impl CanBeFocused for Button <'_> {
+    fn focused(mut self) -> Self {
+        self.borders = self.borders.clone().focused();
+        self
+    }
+    fn unfocused(mut self) -> Self {
+        self.borders = self.borders.clone().focused();
+        self
+    }
+}
+
+impl MayDisplayCursor for Button <'_> {
+    fn get_cursor_position(& self) -> Option<Position> {
+        None
+    }
+}
+
+impl CanHandleUserinput for Button <'_> {
+    fn handle_userinput (& mut self, _: & KeyCode) {}
+}
+
+impl WidgetRef for Button <'_> {
+    fn render_ref(& self, area: Rect, buffer: & mut Buffer) {
+        self.text.clone().block(self.borders.clone()).render_ref(area, buffer);
+    }
+}
+
+impl IsContent for Button <'_> {}
