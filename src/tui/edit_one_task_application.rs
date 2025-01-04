@@ -3,11 +3,11 @@ use crate::Task;
 use super::{
     content::{Button, TextField},
     field::Field,
-    traits::{CanBeFocused, CanHandleUserinput, MayDisplayCursor}
+    traits::{CanHandleUserinput, MayDisplayCursor}
 };
 
 use ratatui::{
-    crossterm::event::KeyCode, layout::{Constraint, Layout, Rect}, prelude::{Buffer, Position}, style::{Modifier, Stylize}, widgets::Paragraph
+    crossterm::event::{self, Event, KeyCode, KeyEventKind}, layout::{Constraint, Layout, Rect}, prelude::{Buffer, Position}, style::{Modifier, Stylize}, widgets::Paragraph, DefaultTerminal
 };
 
 pub enum SelectableItems {
@@ -16,20 +16,21 @@ pub enum SelectableItems {
 }
 
 pub struct Application <'applications_lifetime> {
+    task_to_edit: Option<Task>,
     status: Field <Paragraph <'applications_lifetime>>,
     name: Field <TextField <'applications_lifetime>>,
-    finish: Field <Button <'applications_lifetime>>,
+    delete: Field <Button <'applications_lifetime>>,
     index_of_selected_item: SelectableItems
 }
 
 impl Application <'_> {
-    pub fn new (task_to_edit: & Task, mut area: Rect) -> Self {
+    pub fn new (task_to_edit: Task, mut area: Rect) -> Self {
         area.x += 2;
         area.width -= 4;
         area.y += 1;
         area.height -= 2;
 
-        let [ status_area, name_area, finish_area ] = Layout::vertical(
+        let [ status_area, name_area, delete_area ] = Layout::vertical(
             [ Constraint::Length(1), Constraint::Length(3), Constraint::Length(3) ]
         ).spacing(1).areas(area);
 
@@ -52,20 +53,60 @@ impl Application <'_> {
         name.focus();
         let index_of_selected_item = SelectableItems::Name;
 
-        let [ finish_area ] = Layout::horizontal([ Constraint::Length(10) ]).areas(finish_area);
+        let [ delete_area ] = Layout::horizontal([ Constraint::Length(10) ]).areas(delete_area);
 
-        let finish = Field::new(
-            finish_area,
+        let delete = Field::new(
+            delete_area,
             Button::new(String::from("Delete"))
         );
 
-        Self { status, name, finish, index_of_selected_item }
+        Self { task_to_edit: Some(task_to_edit), status, name, delete, index_of_selected_item }
+    }
+
+    pub fn run(& mut self, terminal: & mut DefaultTerminal) -> Option<Task> {
+        let mut result = self.task_to_edit.clone();
+
+        loop {
+            terminal.draw(
+                |frame| {
+                    self.render(frame.buffer_mut());
+
+                    if let Some(cursor_position) = self.get_cursor_position() {
+                        frame.set_cursor_position(cursor_position);
+                    }
+                }
+            ).expect("Failed to draw the app to the terminal");
+
+            if let Event::Key(key) = event::read().expect("Error reading an event") {
+                if key.kind == KeyEventKind::Press {
+                    match key.code {
+                        KeyCode::Esc => {
+                            break;
+                        }
+                        KeyCode::Enter => {
+                            match self.index_of_selected_item {
+                                SelectableItems::Finish => {
+                                    result = None;
+                                }
+                                _ => {
+                                    result = self.get_task().clone();
+                                }
+                            }
+                            break;
+                        }
+                        _ => { self.handle_userinput(& key.code) }
+                    }
+                }
+            }
+        }
+
+        return result;
     }
 
     pub fn render(& self, buffer: & mut Buffer) {
         self.status.render(buffer);
         self.name.render(buffer);
-        self.finish.render(buffer);
+        self.delete.render(buffer);
     }
 
     fn select_next_item(& mut self) {
@@ -73,10 +114,10 @@ impl Application <'_> {
             SelectableItems::Name => {
                 self.name.unfocus();
                 self.index_of_selected_item = SelectableItems::Finish;
-                self.finish.focus();
+                self.delete.focus();
             }
             SelectableItems::Finish => {
-                self.finish.unfocus();
+                self.delete.unfocus();
                 self.index_of_selected_item = SelectableItems::Name;
                 self.name.focus();
             }
@@ -88,18 +129,22 @@ impl Application <'_> {
             SelectableItems::Finish => {
                 self.name.unfocus();
                 self.index_of_selected_item = SelectableItems::Finish;
-                self.finish.focus();
+                self.delete.focus();
             }
             SelectableItems::Name => {
-                self.finish.unfocus();
+                self.delete.unfocus();
                 self.index_of_selected_item = SelectableItems::Name;
                 self.name.focus();
             }
         }
     }
 
-    pub fn save_task(& self, task: & mut Task) {
-        task.set_name(self.name.reference_content().get_value());
+    pub fn get_task(& mut self) -> & Option<Task> {
+        if let Some(task) = & mut self.task_to_edit {
+            task.set_name(self.name.reference_content().get_value());
+        }
+
+        & self.task_to_edit
     }
 }
 
