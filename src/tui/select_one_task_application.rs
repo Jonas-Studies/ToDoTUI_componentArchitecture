@@ -1,4 +1,4 @@
-use ratatui::{crossterm::event::KeyCode, layout::{Constraint, Layout, Rect}, widgets::Paragraph, Frame};
+use ratatui::{crossterm::event::{self, Event, KeyCode, KeyEventKind}, layout::{Constraint, Layout, Rect}, widgets::Paragraph, DefaultTerminal, Frame};
 
 use crate::task::Task;
 
@@ -26,12 +26,40 @@ impl Application <'_> {
 
         Self { items, index_of_selected_item }
     }
-    pub fn render (& self, frame: & mut Frame) {
+    pub fn run(& mut self, terminal: & mut DefaultTerminal) -> Option<usize> {
+        let mut result = None;
+
+        loop {
+            terminal.draw(
+                |frame| {
+                    self.render(frame);
+                }
+            ).expect("Failed to draw the app to the terminal");
+
+            if let Event::Key(key) = event::read().expect("Error reading an event") {
+                if key.kind == KeyEventKind::Press {
+                    match key.code {
+                        KeyCode::Esc => {
+                            break;
+                        }
+                        KeyCode::Enter => {
+                            result = Some(self.get_index_of_selected_item());
+                            break;
+                        }
+                        _ => { self.handle_userinput(& key.code) }
+                    }
+                }
+            }
+        }
+
+        result
+    }
+    fn render (& self, frame: & mut Frame) {
         for item in self.items.iter() {
             item.render(frame);
         }
     }
-    pub fn get_index_of_selected_item(& self) -> usize {
+    fn get_index_of_selected_item(& self) -> usize {
         self.index_of_selected_item
     }
     fn select_next_item(& mut self) {
