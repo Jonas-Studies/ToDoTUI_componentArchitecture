@@ -12,7 +12,8 @@ use ratatui::{
 
 pub enum SelectableItems {
     Name,
-    Finish
+    Finish,
+    Delete
 }
 
 pub struct Application <'applications_lifetime> {
@@ -20,6 +21,7 @@ pub struct Application <'applications_lifetime> {
     status: Field <Paragraph <'applications_lifetime>>,
     name: Field <TextField <'applications_lifetime>>,
     delete: Field <Button <'applications_lifetime>>,
+    finish: Field <Button <'applications_lifetime>>,
     index_of_selected_item: SelectableItems
 }
 
@@ -53,14 +55,21 @@ impl Application <'_> {
         name.focus();
         let index_of_selected_item = SelectableItems::Name;
 
-        let [ delete_area ] = Layout::horizontal([ Constraint::Length(10) ]).areas(delete_area);
+        let [ delete_area, finish_area ] = Layout::horizontal(
+            [ Constraint::Length(10), Constraint::Length(10) ]
+        ).areas(delete_area);
 
         let delete = Field::new(
             delete_area,
             Button::new(String::from("Delete"))
         );
 
-        Self { task_to_edit: Some(task_to_edit), status, name, delete, index_of_selected_item }
+        let finish = Field::new(
+            finish_area,
+            Button::new(String::from("Finish"))
+        );
+
+        Self { task_to_edit: Some(task_to_edit), status, name, delete, finish, index_of_selected_item }
     }
 
     pub fn run(& mut self, terminal: & mut DefaultTerminal) -> Option<Task> {
@@ -85,10 +94,13 @@ impl Application <'_> {
                         }
                         KeyCode::Enter => {
                             match self.index_of_selected_item {
-                                SelectableItems::Finish => {
+                                SelectableItems::Delete => {
                                     result = None;
                                 }
+                                SelectableItems::Finish => {
+                                }
                                 _ => {
+                                    self.task_to_edit.as_mut()?.finish();
                                     result = self.get_task().clone();
                                 }
                             }
@@ -107,17 +119,23 @@ impl Application <'_> {
         self.status.render(buffer);
         self.name.render(buffer);
         self.delete.render(buffer);
+        self.finish.render(buffer);
     }
 
     fn select_next_item(& mut self) {
         match self.index_of_selected_item {
             SelectableItems::Name => {
                 self.name.unfocus();
-                self.index_of_selected_item = SelectableItems::Finish;
+                self.index_of_selected_item = SelectableItems::Delete;
                 self.delete.focus();
             }
-            SelectableItems::Finish => {
+            SelectableItems::Delete => {
                 self.delete.unfocus();
+                self.index_of_selected_item = SelectableItems::Finish;
+                self.finish.focus();
+            }
+            SelectableItems::Finish => {
+                self.finish.unfocus();
                 self.index_of_selected_item = SelectableItems::Name;
                 self.name.focus();
             }
@@ -127,14 +145,19 @@ impl Application <'_> {
     fn select_previous_item(& mut self) {
         match self.index_of_selected_item {
             SelectableItems::Finish => {
-                self.name.unfocus();
-                self.index_of_selected_item = SelectableItems::Finish;
+                self.finish.unfocus();
+                self.index_of_selected_item = SelectableItems::Delete;
                 self.delete.focus();
             }
-            SelectableItems::Name => {
+            SelectableItems::Delete => {
                 self.delete.unfocus();
                 self.index_of_selected_item = SelectableItems::Name;
                 self.name.focus();
+            }
+            SelectableItems::Name => {
+                self.name.unfocus();
+                self.index_of_selected_item = SelectableItems::Finish;
+                self.finish.focus();
             }
         }
     }
