@@ -23,7 +23,9 @@ impl Application {
             Content::new(TypesOfContent::Title(Self::get_title(task_to_edit.is_finished())))
         );
         content.push(
-            Content::new(TypesOfContent::Textinput(Textinput::new(task_to_edit.get_name(), String::from("Name"))))
+            Content::new(
+                TypesOfContent::Textinput(Textinput::new(task_to_edit.get_name(), String::from("Name")))
+            ).as_can_be_focused()
         );
 
         Self { layout, task: task_to_edit, content, nr_of_focused_content: 1 }
@@ -40,8 +42,41 @@ impl Application {
             )
         )
     }
+    fn reference_focused_content(&self) -> &Content {
+        &self.content[self.nr_of_focused_content]
+    }
     fn reference_focused_content_mutable(&mut self) -> &mut Content {
         &mut self.content[self.nr_of_focused_content]
+    }
+    fn get_nr_of_last_content(&self) -> usize {
+        self.content.len() - 1
+    }
+    fn get_nr_of_first_content(&self) -> usize {
+        0
+    }
+    fn focus_next_content(&mut self) {
+        if self.nr_of_focused_content == self.get_nr_of_last_content() {
+            self.nr_of_focused_content = self.get_nr_of_first_content();
+        }
+        else {
+            self.nr_of_focused_content += 1;
+        }
+        
+        if self.reference_focused_content().can_be_focused() == false {
+            self.focus_next_content();
+        }
+    }
+    fn focus_previous_content(&mut self) {
+        if self.nr_of_focused_content == self.get_nr_of_first_content() {
+            self.nr_of_focused_content = self.get_nr_of_last_content();
+        }
+        else {
+            self.nr_of_focused_content -= 1;
+        }
+        
+        if self.reference_focused_content().can_be_focused() == false {
+            self.focus_previous_content();
+        }
     }
 }
 
@@ -76,13 +111,23 @@ pub enum PossibleActions {
 
 impl CanHandleUserinput<PossibleActions> for Application {
     fn handle_userinpt(&mut self, userinput: KeyCode) -> Option<PossibleActions> {
+        let mut result = None;
+
         match userinput {
             KeyCode::Esc => {
-                Some(PossibleActions::Exit)
+                result = Some(PossibleActions::Exit);
+            }
+            KeyCode::Tab => {
+                self.focus_next_content();
+            }
+            KeyCode::BackTab => {
+                self.focus_previous_content();
             }
             _ => {
-                self.reference_focused_content_mutable().handle_userinpt(userinput)
+                result = self.reference_focused_content_mutable().handle_userinpt(userinput)
             }
         }
+
+        return result;
     }
 }
