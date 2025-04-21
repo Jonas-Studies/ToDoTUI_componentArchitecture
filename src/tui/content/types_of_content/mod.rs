@@ -1,6 +1,7 @@
 use core::clone::Clone;
 
 use button::Button;
+use container::Container;
 use ratatui::prelude::{Rect, Buffer};
 use textinput::Textinput;
 use title::Title;
@@ -10,11 +11,13 @@ use super::traits::{CanBeFocused, CanBeRendered, CanHandleUserinput, MayDisplayC
 pub mod title;
 pub mod textinput;
 pub mod button;
+pub mod container;
 
 pub enum TypesOfContent<PossibleActions> where PossibleActions: Clone {
     Title(Title),
     Textinput(Textinput),
-    Button(Button<PossibleActions>)
+    Button(Button<PossibleActions>),
+    Contaier(Container<PossibleActions>)
 }
 
 impl<PossibleActions> CanBeRendered for TypesOfContent<PossibleActions> where PossibleActions: Clone {
@@ -23,6 +26,7 @@ impl<PossibleActions> CanBeRendered for TypesOfContent<PossibleActions> where Po
             TypesOfContent::Title(content) => { content.render(area, buffer); }
             TypesOfContent::Textinput(content) => { content.render(area, buffer); }
             TypesOfContent::Button(content) => { content.render(area, buffer); }
+            TypesOfContent::Contaier(content) => { content.render(area, buffer); }
         }
     }
 }
