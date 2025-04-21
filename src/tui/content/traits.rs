@@ -13,3 +13,7 @@ pub trait CanHandleUserinput<PossibleActions> {
     // This is supposed to be getting defined at an controlling point in the Software.
     fn handle_userinpt(&mut self, userinput: KeyCode) -> Option<PossibleActions>;
 }
+
+pub trait CanContainValue<TypeOfValue> {
+    fn get_value(&self) -> TypeOfValue;
+}
