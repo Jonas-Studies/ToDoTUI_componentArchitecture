@@ -31,6 +31,7 @@ impl<PossibleActions> CanBeFocused for TypesOfContent<PossibleActions> where Pos
     fn render_focused (&self, area: Rect, buffer: &mut Buffer) {
         match self {
             TypesOfContent::Textinput(content) => { content.render_focused(area, buffer); }
+            TypesOfContent::Button(content) => { content.render_focused(area, buffer); }
             _ => { self.render(area, buffer); }
         }
     }

@@ -1,6 +1,6 @@
-use ratatui::{crossterm::event::KeyCode, widgets::{Block, Paragraph, Widget}};
+use ratatui::{crossterm::event::KeyCode, style::{Style, Stylize}, widgets::{Block, Paragraph, Widget}};
 
-use crate::tui::content::traits::{CanBeRendered, CanHandleUserinput};
+use crate::tui::content::traits::{CanBeFocused, CanBeRendered, CanHandleUserinput};
 
 pub struct Button<PossibleActions> where PossibleActions: Clone {
     label: String,
@@ -22,6 +22,14 @@ impl <PossibleActions> Button<PossibleActions> where PossibleActions: Clone {
 impl <PossibleActions> CanBeRendered for Button<PossibleActions> where PossibleActions: Clone {
     fn render (&self, area: ratatui::prelude::Rect, buffer: &mut ratatui::prelude::Buffer) {
         Paragraph::new(self.get_label()).block(Block::bordered()).centered().render(area, buffer);
+    }
+}
+
+impl <PossibleActions> CanBeFocused for Button<PossibleActions> where PossibleActions: Clone {
+    fn render_focused (&self, area: ratatui::prelude::Rect, buffer: &mut ratatui::prelude::Buffer) {
+        Paragraph::new(self.get_label()).block(
+            Block::bordered().border_style(Style::new().yellow())
+        ).centered().render(area, buffer);
     }
 }
 
