@@ -1,3 +1,5 @@
+use core::clone::Clone;
+
 use button::Button;
 use ratatui::prelude::{Rect, Buffer};
 use textinput::Textinput;
@@ -9,13 +11,13 @@ pub mod title;
 pub mod textinput;
 pub mod button;
 
-pub enum TypesOfContent<PossibleActions> {
+pub enum TypesOfContent<PossibleActions> where PossibleActions: Clone {
     Title(Title),
     Textinput(Textinput),
     Button(Button<PossibleActions>)
 }
 
-impl<PossibleActions> CanBeRendered for TypesOfContent<PossibleActions> {
+impl<PossibleActions> CanBeRendered for TypesOfContent<PossibleActions> where PossibleActions: Clone {
     fn render (&self, area: Rect, buffer: &mut Buffer) {
         match self {
             TypesOfContent::Title(content) => { content.render(area, buffer); }
@@ -25,7 +27,7 @@ impl<PossibleActions> CanBeRendered for TypesOfContent<PossibleActions> {
     }
 }
 
-impl<PossibleActions> CanBeFocused for TypesOfContent<PossibleActions> {
+impl<PossibleActions> CanBeFocused for TypesOfContent<PossibleActions> where PossibleActions: Clone {
     fn render_focused (&self, area: Rect, buffer: &mut Buffer) {
         match self {
             TypesOfContent::Textinput(content) => { content.render_focused(area, buffer); }
@@ -34,10 +36,11 @@ impl<PossibleActions> CanBeFocused for TypesOfContent<PossibleActions> {
     }
 }
 
-impl<PossibleActions> CanHandleUserinput<PossibleActions> for TypesOfContent<PossibleActions> {
+impl<PossibleActions> CanHandleUserinput<PossibleActions> for TypesOfContent<PossibleActions> where PossibleActions: Clone { 
     fn handle_userinpt(&mut self, userinput: ratatui::crossterm::event::KeyCode) -> Option<PossibleActions> {
         match self {
             TypesOfContent::Textinput(content) => { content.handle_userinpt(userinput) }
+            TypesOfContent::Button(content) => { content.handle_userinpt(userinput) }
             _ => { None }
         }
     }

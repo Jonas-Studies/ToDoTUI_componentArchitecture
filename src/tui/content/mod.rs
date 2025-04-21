@@ -5,13 +5,13 @@ use core::ops::{Deref, DerefMut};
 
 use types_of_content::TypesOfContent;
 
-pub struct Content<PossibleActions> {
+pub struct Content<PossibleActions> where PossibleActions: Clone {
     content: TypesOfContent<PossibleActions>,
     can_be_focused: bool,
     can_handle_userinput: bool
 }
 
-impl <PossibleActions> Content<PossibleActions> {
+impl <PossibleActions> Content<PossibleActions> where PossibleActions: Clone {
     pub fn new(content: TypesOfContent<PossibleActions>) -> Self {
         Self { content, can_be_focused: false, can_handle_userinput: false }
     }
@@ -31,7 +31,7 @@ impl <PossibleActions> Content<PossibleActions> {
     }
 }
 
-impl <PossibleActions> Deref for Content<PossibleActions> {
+impl <PossibleActions> Deref for Content<PossibleActions> where PossibleActions: Clone {
     type Target = TypesOfContent<PossibleActions>;
 
     fn deref(&self) -> &Self::Target {
@@ -39,7 +39,7 @@ impl <PossibleActions> Deref for Content<PossibleActions> {
     }
 }
 
-impl <PossibleActions> DerefMut for Content<PossibleActions> {
+impl <PossibleActions> DerefMut for Content<PossibleActions> where PossibleActions: Clone {
     fn deref_mut(&mut self) -> &mut Self::Target {
         &mut self.content
     }
