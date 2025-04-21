@@ -24,7 +24,8 @@ impl CanBeRendered for TypesOfContent {
 impl CanBeFocused for TypesOfContent {
     fn render_focused (&self, area: Rect, buffer: &mut Buffer) {
         match self {
-            _ => { }
+            TypesOfContent::Textinput(content) => { content.render_focused(area, buffer); }
+            _ => { self.render(area, buffer); }
         }
     }
 }
