@@ -2,7 +2,7 @@ use ratatui::layout::{Constraint, Layout};
 
 use crate::task::Task;
 
-use super::content::{types_of_content::{TypesOfContent, title::Title}, Content};
+use super::content::{traits::CanBeRendered, types_of_content::{title::Title, TypesOfContent}, Content};
 
 pub struct Application {
     layout: Layout,
@@ -33,5 +33,15 @@ impl Application {
                 }
             )
         )
+    }
+}
+
+impl CanBeRendered for Application {
+    fn render (&self, area: ratatui::prelude::Rect, buffer: &mut ratatui::prelude::Buffer) {
+        let areas = self.layout.split(area);
+
+        for (nr_of_area, area) in areas.iter().enumerate() {
+            self.content[nr_of_area].render(*area, buffer);
+        }
     }
 }
