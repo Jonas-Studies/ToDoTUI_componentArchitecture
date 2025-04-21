@@ -81,7 +81,7 @@ impl CanHandleUserinput<PossibleActions> for Application {
                 Some(PossibleActions::Exit)
             }
             _ => {
-                self.content[self.nr_of_focused_content].handle_userinpt(userinput)
+                self.reference_focused_content_mutable().handle_userinpt(userinput)
             }
         }
     }
