@@ -12,7 +12,7 @@ pub enum TypesOfContent {
 impl CanBeRendered for TypesOfContent {
     fn render (&self, area: Rect, buffer: &mut Buffer) {
         match self {
-            _ => { }
+            TypesOfContent::Title(content) => { content.render(area, buffer); }
         }
     }
 }
