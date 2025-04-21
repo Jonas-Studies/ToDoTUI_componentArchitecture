@@ -5,14 +5,14 @@ use core::ops::{Deref, DerefMut};
 
 use types_of_content::TypesOfContent;
 
-pub struct Content {
-    content: TypesOfContent,
+pub struct Content<PossibleActions> {
+    content: TypesOfContent<PossibleActions>,
     can_be_focused: bool,
     can_handle_userinput: bool
 }
 
-impl Content {
-    pub fn new(content: TypesOfContent) -> Self {
+impl <PossibleActions> Content<PossibleActions> {
+    pub fn new(content: TypesOfContent<PossibleActions>) -> Self {
         Self { content, can_be_focused: false, can_handle_userinput: false }
     }
     pub fn as_can_be_focused(mut self) -> Self {
@@ -31,15 +31,15 @@ impl Content {
     }
 }
 
-impl Deref for Content {
-    type Target = TypesOfContent;
+impl <PossibleActions> Deref for Content<PossibleActions> {
+    type Target = TypesOfContent<PossibleActions>;
 
     fn deref(&self) -> &Self::Target {
         &self.content
     }
 }
 
-impl DerefMut for Content {
+impl <PossibleActions> DerefMut for Content<PossibleActions> {
     fn deref_mut(&mut self) -> &mut Self::Target {
         &mut self.content
     }

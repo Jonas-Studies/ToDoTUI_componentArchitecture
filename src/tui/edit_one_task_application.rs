@@ -7,7 +7,7 @@ use super::content::{traits::{CanBeFocused, CanBeRendered, CanHandleUserinput}, 
 pub struct Application {
     layout: Layout,
     task: Task,
-    content: Vec<Content>,
+    content: Vec<Content<PossibleActions>>,
     nr_of_focused_content: usize
 }
 
@@ -42,10 +42,10 @@ impl Application {
             )
         )
     }
-    fn reference_focused_content(&self) -> &Content {
+    fn reference_focused_content(&self) -> &Content<PossibleActions> {
         &self.content[self.nr_of_focused_content]
     }
-    fn reference_focused_content_mutable(&mut self) -> &mut Content {
+    fn reference_focused_content_mutable(&mut self) -> &mut Content<PossibleActions> {
         &mut self.content[self.nr_of_focused_content]
     }
     fn get_nr_of_last_content(&self) -> usize {
