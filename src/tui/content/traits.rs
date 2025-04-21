@@ -1,4 +1,4 @@
-use ratatui::{crossterm::event::KeyCode, prelude::{Buffer, Rect}};
+use ratatui::{crossterm::event::KeyCode, layout::Position, prelude::{Buffer, Rect}};
 
 pub trait CanBeRendered {
     fn render (&self, area: Rect, buffer: &mut Buffer);
@@ -16,4 +16,8 @@ pub trait CanHandleUserinput<PossibleActions> {
 
 pub trait CanContainValue<TypeOfValue> {
     fn get_value(&self) -> TypeOfValue;
+}
+
+pub trait MayDisplayCursor {
+    fn get_cursor_position(&self, area: Rect) -> Option<Position>;
 }
