@@ -87,19 +87,27 @@ impl CanBeFocused for Application {
 pub enum PossibleActions {
     Exit,
     Finish,
+    Save,
     Delete
 }
 
 impl CanHandleUserinput<PossibleActions> for Application {
     fn handle_userinpt(&mut self, userinput: KeyCode) -> Option<PossibleActions> {
-        match userinput {
-            KeyCode::Esc => {
-                Some(PossibleActions::Exit)
-            }
-            _ => {
-                self.content.handle_userinpt(userinput)
+        let mut result = self.content.handle_userinpt(userinput);
+
+        if result.is_none() {
+            match userinput {
+                KeyCode::Esc => {
+                    Some(PossibleActions::Exit);
+                }
+                KeyCode::Enter => {
+                    result = Some(PossibleActions::Save);
+                }
+                _ => {  }
             }
         }
+
+        return result;
     }
 }
 

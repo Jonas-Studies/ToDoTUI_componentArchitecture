@@ -38,6 +38,10 @@ pub fn edit_one_task (task_to_edit: Task) -> Option<Task> {
                 PossibleActions::Exit => {
                     break;
                 }
+                PossibleActions::Save => {
+                    result = Some(app.get_value());
+                    break;
+                }
                 PossibleActions::Finish => {
                     let mut task = app.get_value();
                     task.finish();
