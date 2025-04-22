@@ -63,7 +63,7 @@ impl Application {
         );
         result.push_content(
             Content::new(
-                TypesOfContent::Button(Button::new(String::from("Finish"), PossibleActions::Finish))
+                TypesOfContent::Button(Button::new(String::from("Delete"), PossibleActions::Delete))
             ).as_can_be_focused().as_can_handle_userinput()
         );
 
@@ -86,7 +86,8 @@ impl CanBeFocused for Application {
 #[derive(Clone)]
 pub enum PossibleActions {
     Exit,
-    Finish
+    Finish,
+    Delete
 }
 
 impl CanHandleUserinput<PossibleActions> for Application {
