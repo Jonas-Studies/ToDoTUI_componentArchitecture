@@ -13,7 +13,7 @@ fn main() {
         tasks.reference_content_mutable().extend(stored_tasks);
     }
 
-    while let Some(index_of_selected_task) = tui::select_one_task(tasks.reference_content()) {
+    while let Some(index_of_selected_task) = tui::select_one_task(&tasks) {
         // The first element is a placeholder, when selecting it a new task has to be created
         if index_of_selected_task == 0 {
             let new_task = Task::new(String::new());
