@@ -89,7 +89,7 @@ pub fn select_one_task (tasks_to_select_from: &Tasks) -> Option<usize> {
                     break;
                 }
                 select_one_task_application::PossibleActions::Select => {
-                    result = app.get_value();
+                    result = Some(app.get_value());
                     break;
                 }
             }

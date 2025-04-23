@@ -59,8 +59,8 @@ impl CanHandleUserinput<PossibleActions> for Application {
     }
 }
 
-impl CanContainValue<Option<usize>> for Application {
-    fn get_value(&self) -> Option<usize> {
+impl CanContainValue<usize> for Application {
+    fn get_value(&self) -> usize {
         self.content.get_nr_of_focused_content()
     }
 }
