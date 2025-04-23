@@ -13,14 +13,14 @@ pub mod textinput;
 pub mod button;
 pub mod container;
 
-pub enum TypesOfContent<PossibleActions> where PossibleActions: Clone {
+pub enum TypesOfContent<'content_types_lifetime, PossibleActions> where PossibleActions: Clone {
     Title(Title),
     Textinput(Textinput),
     Button(Button<PossibleActions>),
-    Contaier(Container<PossibleActions>)
+    Contaier(Container<'content_types_lifetime, PossibleActions>)
 }
 
-impl<PossibleActions> CanBeRendered for TypesOfContent<PossibleActions> where PossibleActions: Clone {
+impl<PossibleActions> CanBeRendered for TypesOfContent<'_, PossibleActions> where PossibleActions: Clone {
     fn render (&self, area: Rect, buffer: &mut Buffer) {
         match self {
             TypesOfContent::Title(content) => { content.render(area, buffer); }
@@ -31,7 +31,7 @@ impl<PossibleActions> CanBeRendered for TypesOfContent<PossibleActions> where Po
     }
 }
 
-impl<PossibleActions> CanBeFocused for TypesOfContent<PossibleActions> where PossibleActions: Clone {
+impl<PossibleActions> CanBeFocused for TypesOfContent<'_, PossibleActions> where PossibleActions: Clone {
     fn render_focused (&self, area: Rect, buffer: &mut Buffer) {
         match self {
             TypesOfContent::Textinput(content) => { content.render_focused(area, buffer); }
@@ -42,7 +42,7 @@ impl<PossibleActions> CanBeFocused for TypesOfContent<PossibleActions> where Pos
     }
 }
 
-impl<PossibleActions> CanHandleUserinput<PossibleActions> for TypesOfContent<PossibleActions> where PossibleActions: Clone { 
+impl<PossibleActions> CanHandleUserinput<PossibleActions> for TypesOfContent<'_, PossibleActions> where PossibleActions: Clone { 
     fn handle_userinpt(&mut self, userinput: ratatui::crossterm::event::KeyCode) -> Option<PossibleActions> {
         match self {
             TypesOfContent::Textinput(content) => { content.handle_userinpt(userinput) }
@@ -53,7 +53,7 @@ impl<PossibleActions> CanHandleUserinput<PossibleActions> for TypesOfContent<Pos
     }
 }
 
-impl<PossibleActions> MayDisplayCursor for TypesOfContent<PossibleActions> where PossibleActions: Clone {
+impl<PossibleActions> MayDisplayCursor for TypesOfContent<'_, PossibleActions> where PossibleActions: Clone {
     fn get_cursor_position(&self, area: Rect) -> Option<ratatui::prelude::Position> {
         match self {
             TypesOfContent::Textinput(content) => { content.get_cursor_position(area) }

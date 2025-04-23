@@ -10,11 +10,11 @@ pub enum PossibleActions {
     Select
 }
 
-pub struct Application {
-    content: Container<PossibleActions>
+pub struct Application<'applications_lifetime> {
+    content: Container<'applications_lifetime, PossibleActions>
 }
 
-impl Application {
+impl Application<'_> {
     pub fn new(tasks: &Tasks) -> Self {
         let layout = Layout::vertical(
             vec![ Constraint::Length(3); tasks.len() ]
@@ -36,13 +36,13 @@ impl Application {
     }
 }
 
-impl CanBeFocused for Application {
+impl CanBeFocused for Application<'_> {
     fn render_focused (&self, area: ratatui::prelude::Rect, buffer: &mut ratatui::prelude::Buffer) {
         self.content.render_focused(area, buffer);
     }
 }
 
-impl CanHandleUserinput<PossibleActions> for Application {
+impl CanHandleUserinput<PossibleActions> for Application<'_> {
     fn handle_userinpt(&mut self, userinput: KeyCode) -> Option<PossibleActions> {
         match userinput {
             KeyCode::Esc => {
@@ -59,7 +59,7 @@ impl CanHandleUserinput<PossibleActions> for Application {
     }
 }
 
-impl CanContainValue<usize> for Application {
+impl CanContainValue<usize> for Application<'_> {
     fn get_value(&self) -> usize {
         self.content.get_nr_of_focused_content()
     }

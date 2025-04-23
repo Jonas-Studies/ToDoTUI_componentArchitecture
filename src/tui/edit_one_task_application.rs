@@ -1,17 +1,17 @@
 use std::ops::Deref;
 
-use ratatui::{crossterm::event::KeyCode, layout::{Constraint, Layout}};
+use ratatui::{crossterm::event::KeyCode, layout::{Constraint, Layout}, widgets::Block};
 
 use crate::task::Task;
 
 use super::content::{traits::{CanBeFocused, CanBeRendered, CanContainValue, CanHandleUserinput, MayDisplayCursor}, types_of_content::{button::Button, container::Container, textinput::Textinput, title::Title, TypesOfContent}, Content};
 
-pub struct Application {
+pub struct Application<'applications_lifetime> {
     task: Task,
-    content: Container<PossibleActions>
+    content: Container<'applications_lifetime, PossibleActions>
 }
 
-impl Application {
+impl Application<'_> {
     pub fn new(task_to_edit: Task) -> Self {
         let layout = Layout::vertical(
             [ Constraint::Length(1), Constraint::Length(3), Constraint::Length(3) ]
@@ -49,7 +49,7 @@ impl Application {
             )
         )
     }
-    fn get_buttons_as_container() -> Container<PossibleActions> {
+    fn get_buttons_as_container<'callers_lifetime>() -> Container<'callers_lifetime, PossibleActions> {
         let layout = Layout::horizontal(
             [ Constraint::Length(10), Constraint::Length(10) ]
         );
@@ -71,13 +71,13 @@ impl Application {
     }
 }
 
-impl CanBeRendered for Application {
+impl CanBeRendered for Application <'_> {
     fn render (&self, area: ratatui::prelude::Rect, buffer: &mut ratatui::prelude::Buffer) {
         self.content.render(area, buffer);
     }
 }
 
-impl CanBeFocused for Application {
+impl CanBeFocused for Application <'_> {
     fn render_focused (&self, area: ratatui::prelude::Rect, buffer: &mut ratatui::prelude::Buffer) {
         self.content.render_focused(area, buffer);
     }
@@ -91,7 +91,7 @@ pub enum PossibleActions {
     Delete
 }
 
-impl CanHandleUserinput<PossibleActions> for Application {
+impl CanHandleUserinput<PossibleActions> for Application <'_> {
     fn handle_userinpt(&mut self, userinput: KeyCode) -> Option<PossibleActions> {
         let mut result = self.content.handle_userinpt(userinput);
 
@@ -111,7 +111,7 @@ impl CanHandleUserinput<PossibleActions> for Application {
     }
 }
 
-impl CanContainValue<Task> for Application {
+impl CanContainValue<Task> for Application <'_> {
     fn get_value(&self) -> Task {
         let mut result = self.task.clone();
 
@@ -123,7 +123,7 @@ impl CanContainValue<Task> for Application {
     }
 }
 
-impl MayDisplayCursor for Application {
+impl MayDisplayCursor for Application <'_> {
     fn get_cursor_position(&self, area: ratatui::prelude::Rect) -> Option<ratatui::prelude::Position> {
         self.content.get_cursor_position(area)
     }
