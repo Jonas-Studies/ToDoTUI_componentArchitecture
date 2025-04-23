@@ -5,6 +5,7 @@ use container::Container;
 use ratatui::prelude::{Rect, Buffer};
 use textinput::Textinput;
 use title::Title;
+use checkbox::Checkbox;
 
 use super::traits::{CanBeFocused, CanBeRendered, CanHandleUserinput, MayDisplayCursor};
 
@@ -12,10 +13,12 @@ pub mod title;
 pub mod textinput;
 pub mod button;
 pub mod container;
+pub mod checkbox;
 
 pub enum TypesOfContent<'content_types_lifetime, PossibleActions> where PossibleActions: Clone {
     Title(Title),
     Textinput(Textinput),
+    Checkbox(Checkbox),
     Button(Button<PossibleActions>),
     Contaier(Container<'content_types_lifetime, PossibleActions>)
 }
@@ -27,6 +30,7 @@ impl<PossibleActions> CanBeRendered for TypesOfContent<'_, PossibleActions> wher
             TypesOfContent::Textinput(content) => { content.render(area, buffer); }
             TypesOfContent::Button(content) => { content.render(area, buffer); }
             TypesOfContent::Contaier(content) => { content.render(area, buffer); }
+            TypesOfContent::Checkbox(content) => { content.render(area, buffer); }
         }
     }
 }
@@ -37,6 +41,7 @@ impl<PossibleActions> CanBeFocused for TypesOfContent<'_, PossibleActions> where
             TypesOfContent::Textinput(content) => { content.render_focused(area, buffer); }
             TypesOfContent::Button(content) => { content.render_focused(area, buffer); }
             TypesOfContent::Contaier(content) => { content.render_focused(area, buffer); }
+            TypesOfContent::Checkbox(content) => { content.render_focused(area, buffer); }
             _ => { self.render(area, buffer); }
         }
     }
