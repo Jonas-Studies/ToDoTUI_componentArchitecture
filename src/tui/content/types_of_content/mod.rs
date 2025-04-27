@@ -7,7 +7,7 @@ use textinput::Textinput;
 use title::Title;
 use checkbox::Checkbox;
 
-use super::traits::{CanBeFocused, CanBeRendered, CanHandleUserinput, MayDisplayCursor};
+use super::{possible_actions::PossibleActions, traits::{CanBeFocused, CanBeRendered, CanHandleUserinput, MayDisplayCursor}};
 
 pub mod title;
 pub mod textinput;
@@ -15,15 +15,15 @@ pub mod button;
 pub mod container;
 pub mod checkbox;
 
-pub enum TypesOfContent<'content_types_lifetime, PossibleActions> where PossibleActions: Clone {
+pub enum TypesOfContent<'content_types_lifetime> {
     Title(Title),
     Textinput(Textinput),
     Checkbox(Checkbox),
-    Button(Button<PossibleActions>),
-    Contaier(Container<'content_types_lifetime, PossibleActions>)
+    Button(Button),
+    Contaier(Container<'content_types_lifetime>),
 }
 
-impl<PossibleActions> CanBeRendered for TypesOfContent<'_, PossibleActions> where PossibleActions: Clone {
+impl CanBeRendered for TypesOfContent<'_> {
     fn render (&self, area: Rect, buffer: &mut Buffer) {
         match self {
             TypesOfContent::Title(content) => { content.render(area, buffer); }
@@ -35,7 +35,7 @@ impl<PossibleActions> CanBeRendered for TypesOfContent<'_, PossibleActions> wher
     }
 }
 
-impl<PossibleActions> CanBeFocused for TypesOfContent<'_, PossibleActions> where PossibleActions: Clone {
+impl CanBeFocused for TypesOfContent<'_> {
     fn render_focused (&self, area: Rect, buffer: &mut Buffer) {
         match self {
             TypesOfContent::Textinput(content) => { content.render_focused(area, buffer); }
@@ -47,7 +47,7 @@ impl<PossibleActions> CanBeFocused for TypesOfContent<'_, PossibleActions> where
     }
 }
 
-impl<PossibleActions> CanHandleUserinput<PossibleActions> for TypesOfContent<'_, PossibleActions> where PossibleActions: Clone { 
+impl CanHandleUserinput for TypesOfContent<'_> { 
     fn handle_userinpt(&mut self, userinput: ratatui::crossterm::event::KeyCode) -> Option<PossibleActions> {
         match self {
             TypesOfContent::Textinput(content) => { content.handle_userinpt(userinput) }
@@ -58,7 +58,7 @@ impl<PossibleActions> CanHandleUserinput<PossibleActions> for TypesOfContent<'_,
     }
 }
 
-impl<PossibleActions> MayDisplayCursor for TypesOfContent<'_, PossibleActions> where PossibleActions: Clone {
+impl MayDisplayCursor for TypesOfContent<'_> {
     fn get_cursor_position(&self, area: Rect) -> Option<ratatui::prelude::Position> {
         match self {
             TypesOfContent::Textinput(content) => { content.get_cursor_position(area) }

@@ -1,6 +1,6 @@
 use ratatui::{crossterm::event::KeyCode, layout::Positions, prelude::{Buffer, Position, Rect}, style::{Style, Stylize}, widgets::{Block, Paragraph, Widget}};
 
-use crate::tui::content::traits::{CanBeFocused, CanBeRendered, CanContainValue, CanHandleUserinput, MayDisplayCursor};
+use crate::tui::content::{possible_actions::PossibleActions, traits::{CanBeFocused, CanBeRendered, CanContainValue, CanHandleUserinput, MayDisplayCursor}};
 
 pub struct Textinput {
     // Using a vector of chars instead of String because there would be problems with utf-8
@@ -73,7 +73,7 @@ impl CanBeFocused for Textinput {
     }
 }
 
-impl<PossibleActions> CanHandleUserinput<PossibleActions> for Textinput {
+impl CanHandleUserinput for Textinput {
     fn handle_userinpt(&mut self, userinput: KeyCode) -> Option<PossibleActions> {
         match userinput {
             KeyCode::Right => {

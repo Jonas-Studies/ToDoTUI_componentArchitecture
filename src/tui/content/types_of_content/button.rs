@@ -1,13 +1,13 @@
 use ratatui::{crossterm::event::KeyCode, style::{Style, Stylize}, widgets::{Block, Paragraph, Widget}};
 
-use crate::tui::content::traits::{CanBeFocused, CanBeRendered, CanHandleUserinput};
+use crate::tui::content::{possible_actions::PossibleActions, traits::{CanBeFocused, CanBeRendered, CanHandleUserinput}};
 
-pub struct Button<PossibleActions> where PossibleActions: Clone {
+pub struct Button {
     label: String,
     action_on_click: PossibleActions
 }
 
-impl <PossibleActions> Button<PossibleActions> where PossibleActions: Clone {
+impl Button {
     pub fn new(label: String, action_on_click: PossibleActions) -> Self {
         Self {label, action_on_click }
     }
@@ -19,13 +19,13 @@ impl <PossibleActions> Button<PossibleActions> where PossibleActions: Clone {
     }
 }
 
-impl <PossibleActions> CanBeRendered for Button<PossibleActions> where PossibleActions: Clone {
+impl CanBeRendered for Button {
     fn render (&self, area: ratatui::prelude::Rect, buffer: &mut ratatui::prelude::Buffer) {
         Paragraph::new(self.get_label()).block(Block::bordered()).centered().render(area, buffer);
     }
 }
 
-impl <PossibleActions> CanBeFocused for Button<PossibleActions> where PossibleActions: Clone {
+impl  CanBeFocused for Button {
     fn render_focused (&self, area: ratatui::prelude::Rect, buffer: &mut ratatui::prelude::Buffer) {
         Paragraph::new(self.get_label()).block(
             Block::bordered().border_style(Style::new().yellow())
@@ -33,7 +33,7 @@ impl <PossibleActions> CanBeFocused for Button<PossibleActions> where PossibleAc
     }
 }
 
-impl <PossibleActions> CanHandleUserinput<PossibleActions> for Button<PossibleActions> where PossibleActions: Clone {
+impl  CanHandleUserinput for Button {
     fn handle_userinpt(&mut self, userinput: ratatui::crossterm::event::KeyCode) -> Option<PossibleActions> {
         match userinput {
             KeyCode::Enter => { Some(self.get_action_on_click()) }

@@ -4,11 +4,11 @@ use ratatui::{crossterm::event::KeyCode, layout::{Constraint, Layout}, widgets::
 
 use crate::task::Task;
 
-use super::content::{traits::{CanBeFocused, CanBeRendered, CanContainValue, CanHandleUserinput, MayDisplayCursor}, types_of_content::{button::Button, container::Container, textinput::Textinput, title::Title, TypesOfContent}, Content};
+use super::content::{possible_actions::PossibleActions, traits::{CanBeFocused, CanBeRendered, CanContainValue, CanHandleUserinput, MayDisplayCursor}, types_of_content::{button::Button, container::Container, textinput::Textinput, title::Title, TypesOfContent}, Content};
 
 pub struct Application<'applications_lifetime> {
     task: Task,
-    content: Container<'applications_lifetime, PossibleActions>
+    content: Container<'applications_lifetime>
 }
 
 impl Application<'_> {
@@ -49,7 +49,7 @@ impl Application<'_> {
             )
         )
     }
-    fn get_buttons_as_container<'callers_lifetime>() -> Container<'callers_lifetime, PossibleActions> {
+    fn get_buttons_as_container<'callers_lifetime>() -> Container<'callers_lifetime> {
         let layout = Layout::horizontal(
             [ Constraint::Length(10), Constraint::Length(10) ]
         );
@@ -83,22 +83,14 @@ impl CanBeFocused for Application <'_> {
     }
 }
 
-#[derive(Clone)]
-pub enum PossibleActions {
-    Exit,
-    Finish,
-    Save,
-    Delete
-}
-
-impl CanHandleUserinput<PossibleActions> for Application <'_> {
+impl CanHandleUserinput for Application <'_> {
     fn handle_userinpt(&mut self, userinput: KeyCode) -> Option<PossibleActions> {
         let mut result = self.content.handle_userinpt(userinput);
 
         if result.is_none() {
             match userinput {
                 KeyCode::Esc => {
-                    result = Some(PossibleActions::Exit);
+                    result = Some(PossibleActions::Cancel);
                 }
                 KeyCode::Enter => {
                     result = Some(PossibleActions::Save);

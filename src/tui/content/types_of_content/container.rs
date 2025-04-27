@@ -2,20 +2,18 @@ use core::{clone::Clone, ops::DerefMut};
 
 use ratatui::{crossterm::event::KeyCode, layout::Layout, style::{Style, Stylize}, widgets::{Block, Widget}};
 
-use crate::tui::content::{traits::{CanBeFocused, CanBeRendered, CanHandleUserinput, MayDisplayCursor}, Content};
+use crate::tui::content::{possible_actions::PossibleActions, traits::{CanBeFocused, CanBeRendered, CanHandleUserinput, MayDisplayCursor}, Content};
 
 use super::TypesOfContent;
 
-pub struct Container<'containers_lifetime, PossibleActions> where 
-    PossibleActions: Clone 
-{
+pub struct Container<'containers_lifetime> {
     layout: Layout,
-    content: Vec<Content<'containers_lifetime, PossibleActions>>,
+    content: Vec<Content<'containers_lifetime>>,
     nr_of_focused_content: usize,
     borders: Option<Block<'containers_lifetime>>
 }
 
-impl <'callers_lifetime, PossibleActions> Container<'callers_lifetime, PossibleActions> where PossibleActions: Clone {
+impl <'callers_lifetime> Container<'callers_lifetime> {
     pub fn new(layout: Layout) -> Self {
         let content = Vec::new();
 
@@ -25,16 +23,16 @@ impl <'callers_lifetime, PossibleActions> Container<'callers_lifetime, PossibleA
         self.borders = Some(borders);
         self
     }
-    pub fn push_content(&mut self, content: Content<'callers_lifetime, PossibleActions>) {
+    pub fn push_content(&mut self, content: Content<'callers_lifetime>) {
         self.content.push(content);
     }
-    fn reference_focused_content(&self) -> &Content<PossibleActions> {
+    fn reference_focused_content(&self) -> &Content {
         &self.content[self.nr_of_focused_content]
     }
-    fn reference_focused_content_mutable(&mut self) -> &mut Content<'callers_lifetime, PossibleActions> {
+    fn reference_focused_content_mutable(&mut self) -> &mut Content<'callers_lifetime> {
         &mut self.content[self.nr_of_focused_content]
     }
-    pub fn reference_content(&self, nr: usize) -> &Content<PossibleActions> {
+    pub fn reference_content(&self, nr: usize) -> &Content {
         &self.content[nr]
     }
     pub fn get_nr_of_focused_content(&self) -> usize {
@@ -98,9 +96,7 @@ impl <'callers_lifetime, PossibleActions> Container<'callers_lifetime, PossibleA
     }
 }
 
-impl <PossibleActions> CanBeRendered for Container<'_, PossibleActions> where
-    PossibleActions: Clone
-{
+impl CanBeRendered for Container<'_> {
     fn render (&self, area: ratatui::prelude::Rect, buffer: &mut ratatui::prelude::Buffer) {
         let areas = self.layout.split(area);
 
@@ -114,9 +110,7 @@ impl <PossibleActions> CanBeRendered for Container<'_, PossibleActions> where
     }
 }
 
-impl <PossibleActions> CanBeFocused for Container<'_, PossibleActions> where
-    PossibleActions: Clone 
-{
+impl CanBeFocused for Container<'_> {
     fn render_focused (&self, area: ratatui::prelude::Rect, buffer: &mut ratatui::prelude::Buffer) {
         let areas = self.layout.split(area);
 
@@ -135,9 +129,7 @@ impl <PossibleActions> CanBeFocused for Container<'_, PossibleActions> where
     }
 }
 
-impl <PossibleActions> CanHandleUserinput<PossibleActions> for Container<'_, PossibleActions> where
-    PossibleActions: Clone
-{
+impl  CanHandleUserinput for Container<'_> {
     fn handle_userinpt(&mut self, userinput: KeyCode) -> Option<PossibleActions> {
         let mut result = None;
 
@@ -198,9 +190,7 @@ impl <PossibleActions> CanHandleUserinput<PossibleActions> for Container<'_, Pos
     }
 }
 
-impl <PossibleActions> MayDisplayCursor for Container<'_, PossibleActions> where 
-    PossibleActions: Clone
-{
+impl  MayDisplayCursor for Container<'_> {
     fn get_cursor_position(&self, area: ratatui::prelude::Rect) -> Option<ratatui::prelude::Position> {
         let mut result = None;
 

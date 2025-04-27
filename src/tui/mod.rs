@@ -2,8 +2,7 @@ mod content;
 mod edit_one_task_application;
 mod select_one_task_application;
 
-use content::traits::{CanBeFocused, CanContainValue, CanHandleUserinput, MayDisplayCursor};
-use edit_one_task_application::PossibleActions;
+use content::{possible_actions::PossibleActions, traits::{CanBeFocused, CanContainValue, CanHandleUserinput, MayDisplayCursor}};
 use ratatui::crossterm::event::{self, Event, KeyEventKind};
 
 use crate::{tasks::Tasks, Task};
@@ -35,7 +34,7 @@ pub fn edit_one_task (task_to_edit: Task) -> Option<Task> {
 
         if let Some(action) = action {
             match action {
-                PossibleActions::Exit => {
+                PossibleActions::Cancel => {
                     break;
                 }
                 PossibleActions::Save => {
@@ -52,6 +51,7 @@ pub fn edit_one_task (task_to_edit: Task) -> Option<Task> {
                     result = None;
                     break;
                 }
+                _ => { }
             }
         }
     }
@@ -85,13 +85,14 @@ pub fn select_one_task (tasks_to_select_from: &Tasks) -> Option<usize> {
 
         if let Some(action) = action {
             match action {
-                select_one_task_application::PossibleActions::Exit => {
+                PossibleActions::Cancel => {
                     break;
                 }
-                select_one_task_application::PossibleActions::Select => {
+                PossibleActions::Select => {
                     result = Some(app.get_value());
                     break;
                 }
+                _ => { }
             }
         }
     }

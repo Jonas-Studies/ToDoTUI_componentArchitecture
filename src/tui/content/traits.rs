@@ -1,5 +1,7 @@
 use ratatui::{crossterm::event::KeyCode, layout::Position, prelude::{Buffer, Rect}};
 
+use super::possible_actions::PossibleActions;
+
 pub trait CanBeRendered {
     fn render (&self, area: Rect, buffer: &mut Buffer);
 }
@@ -8,7 +10,7 @@ pub trait CanBeFocused {
     fn render_focused (&self, area: Rect, buffer: &mut Buffer);
 }
 
-pub trait CanHandleUserinput<PossibleActions> {
+pub trait CanHandleUserinput {
     // fn is supposed to return a type of an enum of possible actions to result from userinput.
     // This is supposed to be getting defined at an controlling point in the Software.
     fn handle_userinpt(&mut self, userinput: KeyCode) -> Option<PossibleActions>;

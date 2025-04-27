@@ -1,19 +1,11 @@
-mod tasklist_item;
-
 use ratatui::{crossterm::event::KeyCode, layout::{Constraint, Layout}};
 
 use crate::tasks::Tasks;
 
-use super::content::{traits::{CanBeFocused, CanContainValue, CanHandleUserinput}, types_of_content::{container::Container, textinput::Textinput, TypesOfContent}, Content};
-
-#[derive(Clone)]
-pub enum PossibleActions {
-    Exit,
-    Select
-}
+use super::content::{possible_actions::PossibleActions, traits::{CanBeFocused, CanContainValue, CanHandleUserinput}, types_of_content::{container::Container, textinput::Textinput, TypesOfContent}, Content};
 
 pub struct Application<'applications_lifetime> {
-    content: Container<'applications_lifetime, PossibleActions>
+    content: Container<'applications_lifetime>
 }
 
 impl Application<'_> {
@@ -44,11 +36,11 @@ impl CanBeFocused for Application<'_> {
     }
 }
 
-impl CanHandleUserinput<PossibleActions> for Application<'_> {
+impl CanHandleUserinput for Application<'_> {
     fn handle_userinpt(&mut self, userinput: KeyCode) -> Option<PossibleActions> {
         match userinput {
             KeyCode::Esc => {
-                Some(PossibleActions::Exit)
+                Some(PossibleActions::Cancel)
             }
             KeyCode::Enter => {
                 Some(PossibleActions::Select)
