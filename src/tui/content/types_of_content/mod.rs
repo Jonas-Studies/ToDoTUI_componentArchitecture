@@ -2,7 +2,7 @@ use core::clone::Clone;
 
 use button::Button;
 use container::Container;
-use ratatui::prelude::{Rect, Buffer};
+use ratatui::{prelude::{Buffer, Rect}, widgets::{WidgetRef, Paragraph}};
 use textinput::Textinput;
 use title::Title;
 use checkbox::Checkbox;
@@ -21,6 +21,7 @@ pub enum TypesOfContent<'content_types_lifetime> {
     Checkbox(Checkbox),
     Button(Button),
     Contaier(Container<'content_types_lifetime>),
+    Paragraph(Paragraph<'content_types_lifetime>)
 }
 
 impl CanBeRendered for TypesOfContent<'_> {
@@ -31,6 +32,7 @@ impl CanBeRendered for TypesOfContent<'_> {
             TypesOfContent::Button(content) => { content.render(area, buffer); }
             TypesOfContent::Contaier(content) => { content.render(area, buffer); }
             TypesOfContent::Checkbox(content) => { content.render(area, buffer); }
+            TypesOfContent::Paragraph(content) => { content.render_ref(area, buffer); }
         }
     }
 }

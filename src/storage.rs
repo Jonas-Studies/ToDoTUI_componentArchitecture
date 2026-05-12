@@ -2,7 +2,7 @@ use crate::Task;
 use std::fs::File;
 use std::io::{Read, Write};
 
-const DATA_PATH: & str = "/home/coding/Projects/ToDoTUI/data/tasks.json";
+const DATA_PATH: & str = "/home/coding/Coding/Projects/ToDoTUI/data/tasks.json";
 
 pub fn get_tasks() -> Option<Vec<Task>> {
     if let Ok(mut file) = File::open(DATA_PATH) {

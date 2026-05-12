@@ -1,32 +1,64 @@
-use ratatui::{crossterm::event::KeyCode, layout::{Constraint, Layout}};
+use ratatui::{crossterm::event::KeyCode, layout::{Constraint, Layout}, widgets::Paragraph};
 
-use crate::tasks::Tasks;
+use crate::{task::Task, tasks::Tasks};
 
-use super::content::{possible_actions::PossibleActions, traits::{CanBeFocused, CanContainValue, CanHandleUserinput}, types_of_content::{container::Container, textinput::Textinput, TypesOfContent}, Content};
+use super::content::{possible_actions::PossibleActions, traits::{CanBeFocused, CanContainValue, CanHandleUserinput}, types_of_content::{container::Container, TypesOfContent}, Content};
 
 pub struct Application<'applications_lifetime> {
     content: Container<'applications_lifetime>
 }
 
-impl Application<'_> {
-    pub fn new(tasks: &Tasks) -> Self {
+impl <'applications_lifetime> Application<'applications_lifetime> {
+    pub fn new(tasks: &'applications_lifetime Tasks) -> Self {
         let layout = Layout::vertical(
-            vec![ Constraint::Length(3); tasks.len() ]
-        );
+            vec![ Constraint::Length(1); tasks.len() ]
+        ).spacing(1);
 
         let mut content = Container::new(layout);
 
         for task in tasks.iter() {
             content.push_content(
                 Content::new(
-                    TypesOfContent::Textinput(Textinput::new(task.get_name(), String::new()))
-                ).as_can_be_focused()
+                    TypesOfContent::Contaier(Self::get_tasklistitem(task))
+                )
             );
         }
 
         content.focus_first();
 
         Self { content }
+    }
+
+    fn get_tasklistitem(task: &Task) -> Container {
+        let mut result = Container::new(
+            Layout::horizontal(
+                [ Constraint::Length(5), Constraint::Length(50) ]
+            ).spacing(1)
+        );
+
+        result.push_content(
+            Content::new(
+                TypesOfContent::Paragraph(
+                    Paragraph::new(
+                        String::from(
+                            if task.is_finished() {
+                                "Done:"
+                            }
+                            else {
+                                "ToDo:"
+                            }
+                        )
+                    )
+                )
+            )
+        );
+        result.push_content(
+            Content::new(
+                TypesOfContent::Paragraph(Paragraph::new(task.get_name()))
+            )
+        );
+
+        return result;
     }
 }
 
